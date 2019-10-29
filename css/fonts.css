@@ -1,0 +1,13 @@
+@charset "utf-8";
+/**
+	* 自定义特殊字体样式库
+	*/
+
+@font-face {
+	font-family: '字体名称随便起';
+	src: url('../font/字体名称.eot');
+	src: url('../font/字体名称.woff') format('woff'),
+		url('../font/字体名称.woff2') format('woff2'),
+		url('../font/字体名称.ttf') format('truetype'),
+		url('../font/字体名称.svg') format('svg');
+}
