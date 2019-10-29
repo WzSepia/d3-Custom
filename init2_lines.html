@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<div class="box"></div>
+		<script type="text/javascript" src="js/d3.v5.min.js"></script>
+		<script type="text/javascript">
+			var w = 300,
+				h = 150;
+			var nodes = [{
+					x: 30,
+					y: 50
+				},
+				{
+					x: 50,
+					y: 80
+				},
+				{
+					x: 90,
+					y: 120
+				}
+			];
+			var links = [{
+					source: nodes[0],
+					target: nodes[1]
+				},
+				{
+					source: nodes[2],
+					target: nodes[1]
+				}
+			];
+
+			var box = d3.select(".box").style("width", "300px")
+				.style("height", "150px")
+				.style("border", "1px solid #f60")
+				.style("background-color", "rgba(122,122,122,0.6)")
+				.text("box容器。")
+
+			var svg = box.append("svg")
+				.attr("width", w)
+				.attr("height", h)
+
+			svg.selectAll("circle .nodes")
+				.data(nodes)
+				.enter()
+				.append("svg:circle")
+				.attr("class", "nodes")
+				.attr("cx", function(d) {
+					return d.x;
+				})
+				.attr("cy", function(d) {
+					return d.y;
+				})
+				.attr("r", "10px")
+				.attr("fill", "black")
+				.on("click",function(){
+					d3.select(this)
+					.transition()
+					.delay(0)
+					.duration(1000)
+					.attr("r","40px")
+				})
+				.on("mouseleave",function(){
+					d3.select(this)
+					.transition()
+					.delay(0)
+					.duration(1000)
+					.attr("r","10px")
+				})
+
+			svg.selectAll(".line")
+				.data(links)
+				.enter()
+				.append("line")
+				.attr("x1", function(d) {
+					return d.source.x
+				})
+				.attr("y1", function(d) {
+					return d.source.y
+				})
+				.attr("x2", function(d) {
+					return d.target.x
+				})
+				.attr("y2", function(d) {
+					return d.target.y
+				})
+				.style("stroke", "rgb(6,120,155)")
+				.on("mouseover",function(){
+					d3.select(this)
+					.style("stroke","#f00")
+				})
+				.on("mouseout",function(){
+					d3.select(this)
+					.style("stroke","rgb(6,120,155)")
+				});
+				
+		</script>
+	</body>
+</html>
