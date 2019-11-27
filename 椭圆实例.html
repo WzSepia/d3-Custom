@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>3D柱形图</title>
+		<link rel="stylesheet" type="text/css" href="css/base.css">
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+			}
+
+			#chart {
+				width: 99%;
+				height: 99%;
+			}
+
+			svg {
+				width: 99%;
+				height: 99%;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="chart"></div>
+		<script type="text/javascript" src="js/d3.v5.min.js"></script>
+		<script type="text/javascript" src="js/d3-shape.v1.min.js"></script>
+		<script type="text/javascript">
+			/**
+			 * 自定义数据
+			 * */
+			var data = [{
+				label: "白皮鸡蛋",
+				value: 45900
+			}, {
+				label: "红皮鸡蛋",
+				value: 389.00
+			}, {
+				label: "鸡蛋",
+				value: 336.00
+			}, {
+				label: "牛肉",
+				value: 282.00
+			}, {
+				label: "羊肉",
+				value: 249.00
+			}, {
+				label: "鸭蛋",
+				value: 242.00
+			}, {
+				label: "红薯",
+				value: 222.00
+			}, {
+				label: "白菜",
+				value: 182.00
+			}, {
+				label: "鸡肉",
+				value: 102.00
+			}];
+			/**
+			 * 图表的一些基础配置数据
+			 * */
+			var margin = 50;
+
+			var svgWidth = d3.select("#chart").style("width").split("px")[0]*1;
+			var svgHeight = d3.select("#chart").style("height").split("px")[0]*1;
+			
+			var radius = Math.min(svgWidth,svgHeight);
+			
+			console.log(svgWidth,svgHeight,radius)
+
+			/**
+			 * 颜色集合
+			 * */
+			var colors = d3.schemeCategory10;
+
+			var svg = d3.select('#chart')
+				.append('svg')
+				.attr('class', 'circle');
+
+			var slices = svg.append("g")
+				.attr("class", "slice")
+				
+			
+		</script>
+	</body>
+</html>
