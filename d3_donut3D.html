@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>3维饼图</title>
+		<link rel="stylesheet" type="text/css" href="./css/base.css" />
+		<style type="text/css">
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+				position: relative;
+			}
+
+			path.slice {
+				stroke-width: 2px;
+			}
+
+			polyline {
+				opacity: 0.3;
+				stroke: black;
+				stroke-width: 2px;
+				fill: none;
+			}
+
+			svg text.percent {
+				fill: #FFFFFF;
+				text-anchor: middle;
+				font-size: 12px;
+			}
+
+			.chart,
+			svg {
+				width: 100%;
+				height: 100%;
+			}
+
+			svg {
+				width: 100%;
+				height: 99%;
+				border: 10px solid #3182BD;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="chart">
+
+		</div>
+		<script type="text/javascript" src="js/d3.v5.min.js"></script>
+		<script type="text/javascript" src="js/Donut3D.js"></script>
+		<script type="text/javascript">
+			/**
+			 * 模拟数据
+			 * */
+			var title_text = "Hello world！";//图形标题
+			var colors = d3.schemeCategory10;//默认颜色组合
+			var legend_pos = {//图例位置
+				x:50,
+				y:20
+			}
+
+			var data = [{
+					lable: "测试一",
+					color: "#3366cc"
+				},
+				{
+					lable: "测试二",
+					color: "#DC3912"
+				},
+				{
+					lable: "测试三",
+					color: "#ff9900"
+				},
+				{
+					lable: "测试四",
+					color: "#109618"
+				},
+				{
+					lable: "测试五",
+					color: "#990099"
+				},
+			];
+
+			/**
+			 * 变量定义
+			 * */
+			var svgWidth = document.querySelector(".chart").offsetWidth;
+			var svgHeight = document.querySelector(".chart").offsetHeight;
+
+			var svg = d3.select(".chart").append("svg")
+			//svg.append("g").attr("id", "salesDonut");
+			svg.append("g").attr("id", "quotesDonut");
+
+			/**
+			 * 圆环:salesDonut(名字:自定义)
+			 * callback:randomData()
+			 * x,y,横向宽度，纵向宽度,图形厚度,圆心留白(空心率)
+			 * 150, 150, 130, 100, 30, 0.4
+			 * */
+
+			//Donut3D.draw("salesDonut", randomData(), 150, 150, 130, 100, 30, 0.4);
+			Donut3D.draw("quotesDonut", randomData(), svgWidth / 2, 150, 130, 100, 30, 0);
+
+			/**
+			 * 模拟的callback方法（这里是随机数值）
+			 * */
+			function randomData() {
+				return data.map(function(d, i) {
+					return {
+						lable: d.lable,
+						value: 1000 * (i+1),//Math.random()
+						color: colors[i]
+					};
+				})
+			}
+
+			window.onresize = function() {
+				svg.selectAll("#quotesDonut *").remove();
+				Donut3D.draw("quotesDonut", randomData(), svgWidth / 2, 150, 130, 100, 30, 0);
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>chart 3D柱形图</title>
+		<link rel="stylesheet" type="text/css" href="./css/base.css" />
+		<style type="text/css">
+			body {
+				background-color: #71795d;
+			}
+
+			#chart {
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+			}
+
+			.legend,
+			.g {
+				cursor: pointer;
+			}
+
+			.tipBox {
+				padding: 0.25rem;
+				border: 1px solid #000000;
+				border-radius: 0.25rem;
+				background-color: rgba(122, 122, 122, 0.8);
+			}
+		</style>
+	</head>
+	<body>
+		<div id="chart"></div>
+
+		<script type="text/javascript" src="js/d3.v5.min.js"></script>
+		<script type="text/javascript">
+			/**
+			 * 默认集合opts
+			 * */
+			var chart_opts = {
+				//容器元素
+				el: "#chart",
+				//字体样式集合
+				font: {
+					"fontFamily": "微软雅黑",
+					"fontWeight": "normal",
+					"fontStyle": "normal",
+					"fontSize": "12px",
+					"color": "#000000"
+				},
+				//图表标题(e.g：数据、样式)
+				title: {
+					font: {
+						"fontFamily": "微软雅黑",
+						"fontWeight": "normal",
+						"fontStyle": "normal",
+						"fontSize": "16px",
+						"color": "#000000"
+					}
+				},
+				//可拓展的刻度样式(e.g：数据、样式)
+				lable: {
+
+				},
+				//图例相关(e.g：数据、样式)
+				legend: {
+
+				},
+				//信息提示框(e.g：数据、样式)
+				tip: {
+					font: {
+						"fontFamily": "微软雅黑",
+						"fontWeight": "normal",
+						"fontStyle": "normal",
+						"fontSize": "12px",
+						"color": "#000000"
+					}
+				},
+				//柱子宽度(粗细)
+				bandwidth: {
+					"width": 0.7 //[0,1]之间的值
+				},
+				//柱子角度
+				bandangle: {
+					"angle": 2.3 //建议[2,3]之间的值,刻度0.1
+				},
+				//渐变色方向(默认竖直)
+				linear_grident: {
+					x1: "0%",
+					y1: "0%",
+					x2: "0%",
+					y2: "100%"
+				},
+				//默认颜色
+				colors: {
+					mainColorList: ["#ec4949", "#e73cd2", "#563ce7", "#3ce7d7", "#3ce779", "#d7e238"],
+					top_rightColorList: ["#9e2929", "#98278a", "#4130a5", "#2ca095", "#299450", "#8d9429"]
+				}
+			}
+
+			/**
+			 * 模拟自定义样式
+			 * */
+			var fontColor = "#ffffff",
+				tickColor = "#000000";
+
+			/**
+			 * 模拟数据
+			 * */
+			var data = [{
+				"name": "HTML5+",
+				"value": "450"
+			}, {
+				"name": "HTML5",
+				"value": "400"
+			}, {
+				"name": "JS",
+				"value": "350"
+			}, {
+				"name": "CSS3",
+				"value": "420"
+			}, {
+				"name": "PHP",
+				"value": "310"
+			}, {
+				"name": "GO",
+				"value": "200"
+			}]
+
+			/**
+			 * 图表的一些基础配置数据
+			 * */
+			var margin = {
+				top: 20,
+				rigth: 90,
+				bottom: 50,
+				left: 50
+			}
+
+			var svgWidth = document.querySelector("#chart").offsetWidth;
+			var svgHeight = document.querySelector("#chart").offsetHeight;
+
+			/**
+			 * 创建各个面的颜色数组
+			 * */
+
+			/**
+			 * 添加了渐变色（默认至上而下）
+			 * 默认以topColorList作为起始颜色
+			 * 默认以mainColorList作为终止颜色
+			 * */
+			var mainColorList = ["#ec4949", "#e73cd2", "#563ce7", "#3ce7d7", "#3ce779", "#d7e238"];
+			var topColorList = ["#9e2929", "#98278a", "#4130a5", "#2ca095", "#299450", "#8d9429"];
+			var rightColorList = ["#9e2929", "#98278a", "#4130a5", "#2ca095", "#299450", "#8d9429"];
+
+			var svg = d3.select("#chart")
+				.append("svg")
+				.attr("width", svgWidth)
+				.attr("height", svgHeight * 0.99)
+				.attr("id", "svg-column")
+
+			var chart_3D_column = function(opts) {
+				/**
+				 * 生成标题
+				 * */
+				svg.append("text")
+					.attr("x", svgWidth / 2)
+					.attr("y", margin.top)
+					.text("标题：蜀道难")
+					.style("fill", fontColor)
+					.style("font-size", opts.title.font.fontSize)
+
+				/**
+				 * 生成图例
+				 * */
+				var legend = svg.selectAll(".legend")
+					.data(data)
+					.enter().append("g")
+					.attr("class", "legend")
+					.attr("transform", function(d, i) {
+						return "translate(" + (svgWidth - 70) + "," + (margin.top * i + 20) + ")";
+					})
+					.style("fill", function(d, i) {
+						return mainColorList[i];
+					})
+				//生成图例文字
+				legend.append("text")
+					.attr("x", 15)
+					.attr("dy", ".35em")
+					.text(function(d, i) {
+						return d.name
+					})
+					.style("fill", function(d, i) {
+						return mainColorList[i];
+					})
+					.style("font-size", opts.font.fontSize)
+				//生成图例块
+				legend.append("rect")
+					.attr("x", 0)
+					.attr("y", -5)
+					.attr("width", 10)
+					.attr("height", 10)
+					.style("fill", function(d, i) {
+						return mainColorList[i];
+					})
+					.attr("radius", 10)
+
+				/**
+				 * 创建X轴序数比例尺
+				 * */
+				function addXAxis() {
+					//定义一个自定义的几何变换
+					var transform = d3.geoTransform({
+						point: function(x, y) {
+							//将指定的流包装为 project geometry (投影流)
+							this.stream.point(x, y)
+						}
+					});
+					//定义几何路径
+					//创建一个新的地理路径生成器
+					var path = d3.geoPath()
+						.projection(transform)
+
+					//创建比例尺
+					var xLinearScale = d3.scaleBand()
+						.domain(data.map(function(d) {
+							return d.name;
+						}))
+						.range([0, svgWidth - margin.left - margin.rigth], 0.1);
+
+					//创建下轴线
+					var xAxis = d3.axisBottom(xLinearScale)
+						.ticks(data.length)
+
+					//绘制轴线
+					var xAxisG = svg.append("g")
+						.call(xAxis)
+						.attr("transform", "translate(" + margin.left + "," + (svgHeight - margin.bottom) + ")");
+
+					//删除原x轴
+					xAxisG.select("path").remove();
+					xAxisG.selectAll("line").remove();
+
+					//绘制新的立体X轴
+					xAxisG.append("path")
+						//设置或获取元素绑定的数据集(不进行数据与元素个数的对比).
+						.datum({
+							//点集数组表示的多边形(可能有镂空)
+							type: "Polygon",
+							coordinates: [
+								[
+									[0, 0],
+									[20, -15],
+									[20 + svgWidth - margin.left - margin.rigth, -15],
+									[svgWidth - margin.left - margin.rigth, 0],
+									[0, 0]
+								]
+							]
+						})
+						.attr("d", path)
+						.attr("fill", "rgba(222,222,222,0.65)");
+
+					//生成文字标签
+					xAxisG.selectAll("text")
+						.attr("font-size", "12px")
+						.attr("fill", fontColor)
+						.attr("transform", "translate(0,4)");
+
+					//定义刻度颜色
+					xAxisG.selectAll(".tick line")
+						.attr("stroke", tickColor)
+
+					//核心算法
+					dataProcessing(xLinearScale);
+				}
+
+				//创建y轴比例尺绘制yz轴
+				var yLinearScale;
+
+				function addYScale() {
+					yLinearScale = d3.scaleLinear()
+						.domain([0, d3.max(data, function(d, i) {
+							return d.value * 1;
+						}) * 1.2])
+						.range([svgHeight - margin.top - margin.bottom, 0]);
+
+					//定义y轴比例尺以及刻度
+					var yAxis = d3.axisLeft(yLinearScale)
+						.ticks(6); //分成6份
+
+
+					//绘制y轴
+					var yAxisG = svg.append("g")
+						.call(yAxis)
+						.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+					//lable
+					yAxisG.selectAll("text")
+						.attr("font-size", "12px")
+						.attr("fill", fontColor)
+
+					//删除y轴路径和tick(lable)
+					//yAxisG.select("path").remove();
+					//yAxisG.selectAll("line").remove();
+				}
+
+				/**
+				 * 核心算法
+				 * */
+				function dataProcessing(xLinearScale) {
+					//1° = π/180(弧度);
+					var angle = Math.PI / opts.bandangle.angle; //2.3
+					for (var i = 0; i < data.length; i++) {
+						var d = data[i];
+						var depth = 10; //图形深度(景深)
+						//柱形图宽度(粗细)
+						d.ow = xLinearScale.bandwidth() * opts.bandwidth.width; //0.7
+						//原点到name的x轴距离
+						d.ox = xLinearScale(d.name);
+						d.oh = 1;
+						//画图点1(point1)
+						d.p1 = {
+							x: Math.cos(angle) * d.ow,
+							y: -Math.sin(angle) - depth //厚度,这个算法也可以 Math.sin(angle) - depth
+						};
+						//画图点2(point2)
+						d.p2 = {
+							x: d.p1.x + d.ow,
+							y: d.p1.y
+						};
+						//画图点3(point3)
+						d.p3 = {
+							x: d.p2.x,
+							y: d.p2.y + d.oh
+						};
+					}
+				}
+
+				/**
+				 * 添加柱状图
+				 * */
+				function addColumn() {
+					var g = svg.selectAll(".g")
+						.data(data)
+						.enter().append("g")
+						.attr("class", "g")
+						.attr("transform", function(d) {
+							return "translate(" + (margin.left + d.ox + 20) + "," + (svgHeight - margin.bottom) + ")"
+						})
+						//柱子事件绑定
+						.on("mouseover", tipInfo)
+						.on("mousemove", tipInfoMove)
+						.on("mouseleave", tipRemove)
+						.on("mousedown", mouseRight)
+
+					g.transition().duration(2500)
+						.attr("transform", function(d, i) {
+							return "translate(" + (margin.left + d.ox + 20) + "," + (yLinearScale(d.value) + 20) + ")"
+						});
+
+					//添加渐变
+					const linearGradient = g.append("linearGradient")
+						.attr("id", function(d, i) {
+							return "linear_gradient" + i
+						})
+						.attr("x1", opts.linear_grident.x1)
+						.attr("y1", opts.linear_grident.y1)
+						.attr("x2", opts.linear_grident.x2)
+						.attr("y2", opts.linear_grident.y2)
+
+					linearGradient.append("stop")
+						.attr("offset", "0%")
+						.attr("stop-color", function(d, i) {
+							return topColorList[i]; //起始颜色
+						})
+
+					linearGradient.append("stop")
+						.attr("offset", "100%")
+						.attr("stop-color", function(d, i) {
+							return mainColorList[i]; //终止颜色
+						})
+
+					//画正面
+					g.append("rect")
+						.attr("x", 0)
+						.attr("y", 0)
+						.attr("class", "transparentPath")
+						.attr("width", function(d, i) {
+							return d.ow;
+						})
+						.attr("height", function(d, i) {
+							return d.oh;
+						})
+						.style("fill", function(d, i) {
+							//return mainColorList[i];//支持纯色
+							return "url(#linear_gradient" + i + ")"; //支持纯色,渐变色
+						})
+						.transition().duration(2500)
+						.attr("height", function(d, i) {
+							return svgHeight - margin.bottom - margin.top - yLinearScale(d.value);
+						});
+
+					g.append("path")
+						.attr("class", "transparantPath")
+						.attr("d", function(d, i) {
+							return "M0,0 L" + d.p1.x + "," + d.p1.y +
+								"L" + d.p2.x + "," + d.p2.y + " L" + d.ow + ",0 L0,0";
+						})
+						.style("fill", function(d, i) {
+							return topColorList[i]; //支持纯色
+							//return "url(#linear_gradient" + i + ")";//支持纯色,渐变色
+						});
+
+					g.append("path")
+						.attr("class", "transparentPath")
+						.attr("d", function(d, i) {
+							return "M" + d.ow + ",0 L" + d.p2.x + "," + d.p2.y +
+								" L" + d.p3.x + "," + d.p3.y + " L" + d.ow + "," + d.oh +
+								" L" + d.ow + ",0";
+						})
+						.style("fill", function(d, i) {
+							//return rightColorList[i];
+							return "url(#linear_gradient" + i + ")";
+						})
+						.transition().duration(2500)
+						.attr("d", function(d, i) {
+							return "M" + d.ow + ",0 L" + d.p2.x + "," + d.p2.y + " L" + d.p3.x +
+								"," + (d.p3.y + svgHeight - margin.top - margin.bottom - yLinearScale(d.value)) +
+								" L" + d.ow + "," + (svgHeight - margin.top - margin.bottom - yLinearScale(d.value)) +
+								" L" + d.ow + ",0";
+						})
+
+				}
+
+				/**
+				 * 弹出信息提示
+				 * */
+				function tipInfo(d, i) {
+					tipRemove(d);
+					const that = this;
+					const x = event.clientX;
+					const y = event.clientY;
+					const tipBox = d3.select(opts.el)
+						.append("div")
+						.attr("class", "tipBox posa")
+						.style("left", (x + 20) + "px")
+						.style("top", y + "px")
+
+					tipBox.append("p")
+						.attr("class", "tipText")
+						.text("name:" + d.name)
+						.style("font-size", opts.tip.font.fontSize)
+
+					tipBox.append("p")
+						.attr("class", "tipText")
+						.text("value:" + d.value)
+						.style("font-size", opts.tip.font.fontSize)
+				}
+
+				/**
+				 * 动态移动提示信息
+				 * */
+				function tipInfoMove(d, i) {
+					const x = event.clientX;
+					const y = event.clientY;
+					//绑定移动跟随
+					d3.select(".tipBox")
+						.transition().delay(0).duration(10)
+						.style("left", (x + 20) + "px")
+						.style("top", y + "px")
+				}
+
+				/**
+				 * 移除信息提示
+				 * */
+				function tipRemove(d) {
+					const tipRemove = d3.selectAll(".tipBox").remove();
+				}
+
+				/**
+				 * 方法运行
+				 * */
+				addXAxis(); //运行生成X轴方法
+				addYScale(); //运行生成y轴方法
+				addColumn(); //运行生成柱形图方法
+			}
+
+			/**
+			 * 方法运行
+			 * */
+			chart_3D_column(chart_opts);
+
+			/**
+			 * 点击方法(callback)
+			 * */
+
+			//鼠标右键设置
+			function mouseRight(el) {
+				//页面的点击事件可以写在这里
+				this.oncontextmenu = function(e) {
+					if (e.button == 2) {
+						e.preventDefault();
+						alert("您点击了右键!" + el.name);
+					}
+				}
+			}
+
+
+			/**
+			 * 监听页面变化,刷新图形
+			 * */
+			window.addEventListener("resize", function() {
+
+				svg.selectAll("*").remove();
+
+				svgWidth = document.querySelector("#chart").offsetWidth;
+				svgHeight = document.querySelector("#chart").offsetHeight;
+
+				svg.attr("width", svgWidth)
+					.attr("height", svgHeight * 0.99)
+
+				chart_3D_column(chart_opts);
+			})
+		</script>
+	</body>
+</html>

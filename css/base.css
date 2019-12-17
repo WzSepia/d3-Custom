@@ -37,3 +37,19 @@ body {
 .posa{
 	position: absolute;
 }
+
+/**
+	* 文字省略号...
+	*/
+.ellipsis{
+	width: 100%;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+/*轻浮动*/
+.clear{
+	content:"";
+	clear: both;
+}
